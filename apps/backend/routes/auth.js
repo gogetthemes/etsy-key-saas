@@ -6,20 +6,75 @@ const prisma = new PrismaClient();
 
 // Регистрация нового пользователя
 router.post('/signup', async (req, res) => {
+  console.log('[AUTH] Signup request received:', { 
+    body: req.body, 
+    headers: req.headers,
+    timestamp: new Date().toISOString() 
+  });
+
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
+  
+  if (!email || !password) {
+    console.log('[AUTH] Signup failed: missing email or password');
+    return res.status(400).json({ error: 'Email and password required' });
+  }
+
+  console.log('[AUTH] Attempting to create user with email:', email);
+
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: { email, passwordHash },
+    // Проверяем, существует ли пользователь
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
     });
-    res.json(user);
-  } catch (e) {
-    if (e.code === 'P2002') { // Unique constraint failed
+
+    if (existingUser) {
+      console.log('[AUTH] Signup failed: user already exists with email:', email);
       return res.status(409).json({ error: 'User with this email already exists' });
     }
-    console.error(e);
-    res.status(500).json({ error: 'Something went wrong' });
+
+    console.log('[AUTH] Hashing password...');
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log('[AUTH] Password hashed successfully');
+
+    console.log('[AUTH] Creating user in database...');
+    const user = await prisma.user.create({
+      data: { 
+        email, 
+        passwordHash,
+        plan: 'FREE' // Устанавливаем план по умолчанию
+      },
+    });
+
+    console.log('[AUTH] User created successfully:', { 
+      id: user.id, 
+      email: user.email, 
+      plan: user.plan 
+    });
+
+    res.status(201).json({
+      id: user.id,
+      email: user.email,
+      plan: user.plan,
+      message: 'User registered successfully'
+    });
+
+  } catch (e) {
+    console.error('[AUTH] Signup error:', {
+      error: e.message,
+      code: e.code,
+      stack: e.stack,
+      timestamp: new Date().toISOString()
+    });
+
+    if (e.code === 'P2002') { // Unique constraint failed
+      console.log('[AUTH] Signup failed: duplicate email');
+      return res.status(409).json({ error: 'User with this email already exists' });
+    }
+
+    res.status(500).json({ 
+      error: 'Something went wrong during registration',
+      details: process.env.NODE_ENV === 'development' ? e.message : undefined
+    });
   }
 });
 

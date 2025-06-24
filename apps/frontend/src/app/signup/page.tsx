@@ -34,10 +34,11 @@ export default function SignupPage() {
       if (res.ok) {
         console.log('[SIGNUP] Registration successful!');
         setSuccess(true);
-        setTimeout(() => {
-          console.log('[SIGNUP] Attempting to sign in...');
-          signIn("credentials", { email, password });
-        }, 1000);
+        // Временно отключаем автоматический вход
+        // setTimeout(() => {
+        //   console.log('[SIGNUP] Attempting to sign in...');
+        //   signIn("credentials", { email, password });
+        // }, 1000);
       } else {
         const data = await res.json();
         console.error('[SIGNUP] Registration failed:', data);
@@ -74,7 +75,7 @@ export default function SignupPage() {
           disabled={loading}
         />
         {error && <div className="text-red-500 text-sm">{error}</div>}
-        {success && <div className="text-green-600 text-sm">Успешно! Входим...</div>}
+        {success && <div className="text-green-600 text-sm">Регистрация успешна! Теперь можете войти.</div>}
         <button 
           type="submit" 
           className="bg-blue-600 text-white rounded p-2 mt-2 disabled:bg-gray-400"

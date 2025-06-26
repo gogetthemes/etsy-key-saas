@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
     return [
       // Proxy specific backend routes, and leave /api/auth for NextAuth
       { source: '/api/signup', destination: `${backendUrl}/api/signup` },

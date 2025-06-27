@@ -19,11 +19,12 @@ export default function SignupPage() {
 
     try {
       console.log('[SIGNUP] Sending request to /api/signup...');
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+      const res = await fetch(`${apiUrl}/api/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       console.log('[SIGNUP] Response received:', { 
         status: res.status, 

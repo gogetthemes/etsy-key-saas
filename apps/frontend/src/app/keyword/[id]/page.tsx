@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 export default function KeywordPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : undefined;
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {

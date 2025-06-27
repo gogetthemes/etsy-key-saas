@@ -16,9 +16,9 @@ router.get('/', async (req, res) => {
 
   try {
     console.log(`[KEYWORDS] Fetching keywords for user: ${userId}`);
-    const keywords = await prisma.keyword.findMany({ where: { userId } });
+  const keywords = await prisma.keyword.findMany({ where: { userId } });
     console.log(`[KEYWORDS] Found ${keywords.length} keywords for user ${userId}`);
-    res.json(keywords);
+  res.json(keywords);
   } catch (e) {
     console.error('[KEYWORDS] Error fetching keywords:', e);
     res.status(500).json({ error: 'Failed to fetch keywords' });
@@ -37,15 +37,15 @@ router.post('/', async (req, res) => {
 
   try {
     console.log(`[KEYWORDS] Checking user: ${userId}`);
-    const user = await prisma.user.findUnique({ where: { id: String(userId) } });
+  const user = await prisma.user.findUnique({ where: { id: String(userId) } });
     if (!user) {
       console.log(`[KEYWORDS] Add keyword failed: user not found: ${userId}`);
       return res.status(404).json({ error: 'User not found' });
     }
 
     console.log(`[KEYWORDS] Checking keyword limit for user: ${userId}`);
-    const count = await prisma.keyword.count({ where: { userId: String(userId) } });
-    const limit = user.plan === 'PRO' ? 100 : 10;
+  const count = await prisma.keyword.count({ where: { userId: String(userId) } });
+  const limit = user.plan === 'PRO' ? 100 : 10;
     
     console.log(`[KEYWORDS] User has ${count}/${limit} keywords`);
     
@@ -54,45 +54,45 @@ router.post('/', async (req, res) => {
       return res.status(403).json({ error: 'Keyword limit reached' });
     }
 
-    // Создаем ключ в базе со статусом "pending"
+  // Создаем ключ в базе со статусом "pending"
     console.log(`[KEYWORDS] Creating keyword: "${keyword}" for user: ${userId}`);
-    const newKeyword = await prisma.keyword.create({ 
-      data: { 
-        userId: String(userId), 
-        keyword, 
-        listingCount: 0, 
-        competition: 0, 
-        suggestions: [] 
-      } 
-    });
+  const newKeyword = await prisma.keyword.create({ 
+    data: { 
+      userId: String(userId), 
+      keyword, 
+      listingCount: 0, 
+      competition: 0, 
+      suggestions: [] 
+    } 
+  });
 
     console.log(`[KEYWORDS] Keyword created successfully:`, { 
       id: newKeyword.id, 
       keyword: newKeyword.keyword 
     });
 
-    // Отправляем асинхронный запрос в n8n и не ждем ответа
-    if (process.env.N8N_WEBHOOK_URL) {
+  // Отправляем асинхронный запрос в n8n и не ждем ответа
+  if (process.env.N8N_WEBHOOK_URL) {
       console.log(`[KEYWORDS] Triggering n8n webhook for keyword: ${newKeyword.id}`);
-      axios.post(process.env.N8N_WEBHOOK_URL, {
-        keywordId: newKeyword.id,
-        keyword: newKeyword.keyword,
+    axios.post(process.env.N8N_WEBHOOK_URL, {
+      keywordId: newKeyword.id,
+      keyword: newKeyword.keyword,
       }).then(() => {
         console.log(`[KEYWORDS] n8n webhook triggered successfully for keyword: ${newKeyword.id}`);
-      }).catch(e => {
-        // Логируем ошибку, но не останавливаем процесс, т.к. фронтенд уже получил ответ
+    }).catch(e => {
+      // Логируем ошибку, но не останавливаем процесс, т.к. фронтенд уже получил ответ
         console.error(`[KEYWORDS] Failed to trigger webhook for keyword ID ${newKeyword.id}:`, e.message);
-      });
-    } else {
+    });
+  } else {
       console.warn('[KEYWORDS] N8N_WEBHOOK_URL is not set. Skipping webhook trigger.');
-    }
-    
-    // Сразу возвращаем пользователю созданный ключ
+  }
+  
+  // Сразу возвращаем пользователю созданный ключ
     console.log(`[KEYWORDS] Returning keyword to user:`, { 
       id: newKeyword.id, 
       keyword: newKeyword.keyword 
     });
-    res.status(201).json(newKeyword);
+  res.status(201).json(newKeyword);
   } catch (e) {
     console.error('[KEYWORDS] Error creating keyword:', e);
     res.status(500).json({ error: 'Failed to create keyword' });
@@ -105,7 +105,7 @@ router.get('/:id', async (req, res) => {
   console.log(`[KEYWORDS] Get keyword analysis request: ${id}`);
   
   try {
-    const keyword = await prisma.keyword.findUnique({ where: { id } });
+  const keyword = await prisma.keyword.findUnique({ where: { id } });
     if (!keyword) {
       console.log(`[KEYWORDS] Keyword not found: ${id}`);
       return res.status(404).json({ error: 'Not found' });
@@ -117,7 +117,7 @@ router.get('/:id', async (req, res) => {
       listingCount: keyword.listingCount,
       competition: keyword.competition
     });
-    res.json(keyword);
+  res.json(keyword);
   } catch (e) {
     console.error('[KEYWORDS] Error fetching keyword analysis:', e);
     res.status(500).json({ error: 'Failed to fetch keyword analysis' });

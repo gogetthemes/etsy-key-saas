@@ -57,10 +57,10 @@ cron.schedule('0 3 * * *', async () => {
       for (const keyword of user.keywords) {
         // Отправляем запрос в n8n webhook (пример URL)
         if (process.env.N8N_RANK_WEBHOOK_URL) {
-          await axios.post(process.env.N8N_RANK_WEBHOOK_URL, {
-            userId: user.id,
-            keyword: keyword.keyword,
-          });
+        await axios.post(process.env.N8N_RANK_WEBHOOK_URL, {
+          userId: user.id,
+          keyword: keyword.keyword,
+        });
           console.log(`[CRON] Sent rank analysis request for keyword: ${keyword.keyword}`);
         } else {
           console.log('[CRON] N8N_RANK_WEBHOOK_URL not set, skipping rank analysis');
@@ -83,16 +83,16 @@ app.post('/api/n8n/rank', async (req, res) => {
   }
   
   try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
+  const { PrismaClient } = require('@prisma/client');
+  const prisma = new PrismaClient();
     
     console.log(`[N8N] Updating listing ${listingId} rank to ${position} for keyword: ${keyword}`);
     
-    await prisma.listing.update({ where: { id: listingId }, data: { currentRank: position } });
-    await prisma.rankHistory.create({ data: { listingId, keyword, position, checkedAt: new Date() } });
+  await prisma.listing.update({ where: { id: listingId }, data: { currentRank: position } });
+  await prisma.rankHistory.create({ data: { listingId, keyword, position, checkedAt: new Date() } });
     
     console.log('[N8N] Rank update completed successfully');
-    res.json({ ok: true });
+  res.json({ ok: true });
   } catch (e) {
     console.error('[N8N] Rank update error:', e);
     res.status(500).json({ error: 'Failed to update rank' });

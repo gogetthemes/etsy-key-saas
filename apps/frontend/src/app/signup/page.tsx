@@ -19,11 +19,11 @@ export default function SignupPage() {
 
     try {
       console.log('[SIGNUP] Sending request to /api/signup...');
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
       console.log('[SIGNUP] Response received:', { 
         status: res.status, 
@@ -31,18 +31,18 @@ export default function SignupPage() {
         ok: res.ok 
       });
 
-      if (res.ok) {
+    if (res.ok) {
         console.log('[SIGNUP] Registration successful!');
-        setSuccess(true);
+      setSuccess(true);
         // Временно отключаем автоматический вход
         // setTimeout(() => {
         //   console.log('[SIGNUP] Attempting to sign in...');
         //   signIn("credentials", { email, password });
         // }, 1000);
-      } else {
-        const data = await res.json();
+    } else {
+      const data = await res.json();
         console.error('[SIGNUP] Registration failed:', data);
-        setError(data.error || "Ошибка регистрации");
+      setError(data.error || "Ошибка регистрации");
       }
     } catch (err) {
       console.error('[SIGNUP] Network error:', err);

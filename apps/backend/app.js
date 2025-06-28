@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cron = require('node-cron');
 const axios = require('axios');
+const cors = require('cors');
 
 console.log('[APP] Starting application...');
 console.log('[APP] Environment:', process.env.NODE_ENV || 'development');
@@ -30,6 +31,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(cors({
+  origin: ['https://etsy-key-saas-frontend.vercel.app', 'http://localhost:3000'],
+  credentials: true
+}));
 
 app.use('/', indexRouter);
 

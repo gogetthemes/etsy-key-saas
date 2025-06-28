@@ -19,7 +19,8 @@ export default function SignupPage() {
 
     try {
       console.log('[SIGNUP] Sending request to /api/signup...');
-      const res = await fetch('https://etsy-key-saas-backend.vercel.app/api/signup', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://etsy-key-saas.onrender.com';
+      const res = await fetch(`${apiUrl}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

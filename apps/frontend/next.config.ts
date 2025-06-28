@@ -4,14 +4,13 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://etsy-key-saas.onrender.com';
     return [
-      // Proxy specific backend routes, and leave /api/auth for NextAuth
-      { source: '/api/signup', destination: `${backendUrl}/api/signup` },
-      { source: '/api/keywords/:path*', destination: `${backendUrl}/api/keywords/:path*` },
-      { source: '/api/listings/:path*', destination: `${backendUrl}/api/listings/:path*` },
-      { source: '/api/admin/:path*', destination: `${backendUrl}/api/admin/:path*` },
-    ]
+      {
+        source: '/api/:path*',
+        destination: `${apiUrl}/api/:path*`
+      }
+    ];
   },
 };
 

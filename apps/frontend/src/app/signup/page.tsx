@@ -15,24 +15,18 @@ export default function SignupPage() {
     setSuccess(false);
     setLoading(true);
 
-    console.log('[SIGNUP] Starting registration process...', { email });
-    console.log('[SIGNUP] Sending request to /api/signup...');
-    const apiUrl = 'https://etsy-key-saas.onrender.com';
-    const fullUrl = `${apiUrl}/api/signup`;
-    console.log('[SIGNUP] Using API URL:', apiUrl);
-    console.log('[SIGNUP] Full URL:', fullUrl);
-    
-    const requestBody = JSON.stringify({ email, password });
-    console.log('[SIGNUP] Request body:', requestBody);
-    
     try {
-      const res = await fetch(fullUrl, {
+      console.log('[SIGNUP] Starting registration process...', { email });
+      console.log('[SIGNUP] Sending request to /api/signup...');
+      
+      // Используем локальный API route вместо прямого запроса на backend
+      const res = await fetch('/api/signup', {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: requestBody,
+        body: JSON.stringify({ email, password }),
       });
 
       console.log('[SIGNUP] Response received:', { 
@@ -41,18 +35,18 @@ export default function SignupPage() {
         ok: res.ok 
       });
 
-    if (res.ok) {
+      if (res.ok) {
         console.log('[SIGNUP] Registration successful!');
-      setSuccess(true);
+        setSuccess(true);
         // Временно отключаем автоматический вход
         // setTimeout(() => {
         //   console.log('[SIGNUP] Attempting to sign in...');
         //   signIn("credentials", { email, password });
         // }, 1000);
-    } else {
-      const data = await res.json();
+      } else {
+        const data = await res.json();
         console.error('[SIGNUP] Registration failed:', data);
-      setError(data.error || "Ошибка регистрации");
+        setError(data.error || "Ошибка регистрации");
       }
     } catch (err) {
       console.error('[SIGNUP] Network error:', err);

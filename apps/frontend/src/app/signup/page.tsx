@@ -19,7 +19,7 @@ export default function SignupPage() {
 
     try {
       console.log('[SIGNUP] Sending request to /api/signup...');
-      const apiUrl = 'https://etsy-key-saas.onrender.com';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://etsy-key-saas.onrender.com';
       console.log('[SIGNUP] Using API URL:', apiUrl);
       const res = await fetch(`${apiUrl}/api/signup`, {
         method: "POST",

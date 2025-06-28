@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({
-  origin: ['https://etsy-key-saas-frontend.vercel.app', 'http://localhost:3000'],
+  origin: true, // Разрешаем все домены для тестирования
   credentials: true
 }));
 

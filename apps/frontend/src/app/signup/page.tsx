@@ -17,10 +17,10 @@ export default function SignupPage() {
 
     try {
       console.log('[SIGNUP] Starting registration process...', { email });
-      console.log('[SIGNUP] Sending request to backend...');
+      console.log('[SIGNUP] Sending request to local API...');
       
-      // Используем полный URL backend напрямую - UPDATED FOR VERCEL
-      const res = await fetch('https://etsy-key-saas.onrender.com/api/signup', {
+      // Используем локальный API route
+      const res = await fetch('/api/signup', {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

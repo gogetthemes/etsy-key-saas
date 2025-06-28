@@ -33,8 +33,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({
-  origin: true, // Разрешаем все домены для тестирования
-  credentials: true
+  origin: [
+    'https://etsy-key-saas-frontend.vercel.app',
+    'https://etsy-key-saas.vercel.app',
+    'https://etsy-key-saas-git-main-gogetthemes.vercel.app',
+    'http://localhost:3000',
+    'https://etsy-key-saas.onrender.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 
 // Обработка OPTIONS запросов для CORS preflight

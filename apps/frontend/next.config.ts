@@ -4,11 +4,14 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://etsy-key-saas.onrender.com';
     return [
       {
+        source: '/api/signup',
+        destination: 'https://etsy-key-saas.onrender.com/api/signup'
+      },
+      {
         source: '/api/:path*',
-        destination: `${apiUrl}/api/:path*`
+        destination: 'https://etsy-key-saas.onrender.com/api/:path*'
       }
     ];
   },

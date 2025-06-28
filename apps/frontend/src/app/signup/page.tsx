@@ -16,15 +16,23 @@ export default function SignupPage() {
     setLoading(true);
 
     console.log('[SIGNUP] Starting registration process...', { email });
-
+    console.log('[SIGNUP] Sending request to /api/signup...');
+    const apiUrl = 'https://etsy-key-saas.onrender.com';
+    const fullUrl = `${apiUrl}/api/signup`;
+    console.log('[SIGNUP] Using API URL:', apiUrl);
+    console.log('[SIGNUP] Full URL:', fullUrl);
+    
+    const requestBody = JSON.stringify({ email, password });
+    console.log('[SIGNUP] Request body:', requestBody);
+    
     try {
-      console.log('[SIGNUP] Sending request to /api/signup...');
-      const apiUrl = 'https://etsy-key-saas.onrender.com';
-      console.log('[SIGNUP] Using API URL:', apiUrl);
-      const res = await fetch(`${apiUrl}/api/signup`, {
+      const res = await fetch(fullUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: requestBody,
       });
 
       console.log('[SIGNUP] Response received:', { 

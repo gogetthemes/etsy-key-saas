@@ -50,6 +50,11 @@ app.options('*', cors());
 
 app.use('/', indexRouter);
 
+// Редирект с главной страницы на signup
+app.get('/', (req, res) => {
+  res.redirect('/signup.html');
+});
+
 // All auth routes are now handled by next-auth on the frontend,
 // EXCEPT for signup. We keep that one.
 app.use('/api', require('./routes/auth'));

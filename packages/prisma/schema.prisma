@@ -59,14 +59,21 @@ enum Plan {
 }
 
 model Keyword {
-  id           String    @id @default(cuid())
-  user         User      @relation(fields: [userId], references: [id])
-  userId       String
-  keyword      String
-  listingCount Int
-  competition  Float
-  suggestions  String[]
-  createdAt    DateTime  @default(now())
+  id              String    @id @default(cuid())
+  user            User      @relation(fields: [userId], references: [id])
+  userId          String
+  keyword         String
+  listingCount    Int       @default(0)
+  competition     Float     @default(0)
+  suggestions     String[]  @default([])
+  relatedKeywords String[]  @default([])  // Related keywords from Etsy listings
+  etsySuggestions String[]  @default([])  // 10 suggestions from Etsy search
+  lastParsed      DateTime? // When was last parsed
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([keyword, userId]) // Prevent duplicate keywords per user
 }
 
 model Listing {

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Keywords API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .keywords-list {
+            margin-top: 30px;
+        }
+        .keyword-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .keyword-text {
+            font-weight: bold;
+            color: #333;
+        }
+        .keyword-meta {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test Keywords API</h1>
+        
+        <div class="form-group">
+            <label for="userId">User ID:</label>
+            <input type="text" id="userId" value="test-user" placeholder="Enter user ID">
+        </div>
+        
+        <div class="form-group">
+            <label for="keyword">Keyword:</label>
+            <input type="text" id="keyword" placeholder="Enter keyword to add">
+        </div>
+        
+        <button onclick="addKeyword()">Add Keyword</button>
+        <button onclick="getKeywords()">Get Keywords</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        
+        <div class="keywords-list">
+            <h2>Keywords List</h2>
+            <div id="keywordsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        
+        function showResult(message, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${isError ? 'error' : 'success'}`;
+            resultDiv.style.display = 'block';
+        }
+        
+        function clearResults() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('keywordsList').innerHTML = '';
+        }
+        
+        async function addKeyword() {
+            const keyword = document.getElementById('keyword').value.trim();
+            const userId = document.getElementById('userId').value.trim();
+            
+            if (!keyword || !userId) {
+                showResult('Please enter both keyword and user ID', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/keywords`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ keyword, userId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Keyword added successfully!\n\nResponse: ${JSON.stringify(data, null, 2)}`);
+                    getKeywords(); // Refresh the list
+                } else {
+                    showResult(`❌ Error: ${data.error}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}`, true);
+            }
+        }
+        
+        async function getKeywords() {
+            const userId = document.getElementById('userId').value.trim();
+            
+            if (!userId) {
+                showResult('Please enter user ID', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/keywords?userId=${encodeURIComponent(userId)}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayKeywords(data);
+                    showResult(`✅ Found ${data.length} keywords for user ${userId}`);
+                } else {
+                    showResult(`❌ Error: ${data.error}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}`, true);
+            }
+        }
+        
+        function displayKeywords(keywords) {
+            const container = document.getElementById('keywordsList');
+            
+            if (keywords.length === 0) {
+                container.innerHTML = '<p>No keywords found for this user.</p>';
+                return;
+            }
+            
+            container.innerHTML = keywords.map(keyword => `
+                <div class="keyword-item">
+                    <div class="keyword-text">${keyword.keyword}</div>
+                    <div class="keyword-meta">
+                        ID: ${keyword.id} | 
+                        Created: ${new Date(keyword.createdAt).toLocaleString()} | 
+                        Active: ${keyword.isActive ? 'Yes' : 'No'} |
+                        Suggestions: ${keyword.etsySuggestions?.length || 0} |
+                        Related: ${keyword.relatedKeywords?.length || 0}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load keywords on page load
+        window.onload = function() {
+            getKeywords();
+        };
+    </script>
+</body>
+</html> 

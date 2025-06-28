@@ -37,6 +37,9 @@ app.use(cors({
   credentials: true
 }));
 
+// Обработка OPTIONS запросов для CORS preflight
+app.options('*', cors());
+
 app.use('/', indexRouter);
 
 // All auth routes are now handled by next-auth on the frontend,

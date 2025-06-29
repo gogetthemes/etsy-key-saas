@@ -37,12 +37,14 @@ app.use(cors({
     'https://etsy-key-saas-frontend.vercel.app',
     'https://etsy-key-saas.vercel.app',
     'https://etsy-key-saas-git-main-gogetthemes.vercel.app',
+    'https://etsy-key-saas-git-develop-gogetthemes.vercel.app',
     'http://localhost:3000',
+    'https://localhost:3000',
     'https://etsy-key-saas.onrender.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With']
 }));
 
 // Обработка OPTIONS запросов для CORS preflight

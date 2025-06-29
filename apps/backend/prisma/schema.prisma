@@ -66,6 +66,8 @@ model Keyword {
   listingCount Int
   competition  Float
   suggestions  String[]
+  etsySuggestions String[]
+  relatedKeywords String[]
   createdAt    DateTime  @default(now())
 }
 

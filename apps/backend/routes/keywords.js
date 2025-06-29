@@ -221,6 +221,38 @@ router.put('/:id/update-data', async (req, res) => {
   }
 });
 
+// Обновить ключевое слово (редактирование из UI)
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      keyword,
+      etsySuggestions,
+      relatedKeywords,
+      listingCount,
+      competition,
+      isActive
+    } = req.body;
+
+    const updatedKeyword = await prisma.keyword.update({
+      where: { id },
+      data: {
+        ...(keyword !== undefined ? { keyword } : {}),
+        ...(etsySuggestions !== undefined ? { etsySuggestions } : {}),
+        ...(relatedKeywords !== undefined ? { relatedKeywords } : {}),
+        ...(listingCount !== undefined ? { listingCount } : {}),
+        ...(competition !== undefined ? { competition } : {}),
+        ...(isActive !== undefined ? { isActive } : {}),
+        updatedAt: new Date()
+      }
+    });
+    res.json(updatedKeyword);
+  } catch (error) {
+    console.error('[KEYWORDS] Edit keyword error:', error);
+    res.status(500).json({ error: 'Failed to edit keyword' });
+  }
+});
+
 // Удалить ключевое слово (soft delete)
 router.delete('/:id', async (req, res) => {
   try {

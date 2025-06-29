@@ -24,13 +24,13 @@ export default function SignupPage() {
       
       // Используем локальный API route
       const res = await fetch('/api/signup', {
-        method: "POST",
+      method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify({ email, password }),
-      });
+      body: JSON.stringify({ email, password }),
+    });
 
       console.log('[SIGNUP] Response received:', { 
         status: res.status, 
@@ -38,11 +38,11 @@ export default function SignupPage() {
         ok: res.ok 
       });
 
-      if (res.ok) {
+    if (res.ok) {
         const data = await res.json();
         console.log('[SIGNUP] Registration successful!', data);
         addActionLog("Регистрация успешна", "success", `Пользователь ${email} создан`);
-        setSuccess(true);
+      setSuccess(true);
         
         // Автоматический вход после успешной регистрации
         setTimeout(() => {
@@ -53,8 +53,8 @@ export default function SignupPage() {
             callbackUrl: "/dashboard"
           });
         }, 1000);
-      } else {
-        const data = await res.json();
+    } else {
+      const data = await res.json();
         console.error('[SIGNUP] Registration failed:', data);
         const errorMessage = data.error || "Ошибка регистрации";
         addActionLog("Ошибка регистрации", "error", errorMessage);
@@ -128,7 +128,7 @@ export default function SignupPage() {
           >
             {loading ? "Регистрация..." : "Зарегистрироваться"}
           </button>
-        </form>
+      </form>
         
         <div className="mt-6">
           <button 
@@ -145,8 +145,8 @@ export default function SignupPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Зарегистрироваться через Google
-          </button>
+        Зарегистрироваться через Google
+      </button>
         </div>
         
         <div className="mt-6 text-center">

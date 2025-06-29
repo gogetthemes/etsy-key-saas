@@ -71,11 +71,11 @@ export default function KeywordsPage() {
     setNewKeyword("");
 
     try {
-      const res = await fetch("/api/keywords", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, keyword: newKeyword }),
-      });
+    const res = await fetch("/api/keywords", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, keyword: newKeyword }),
+    });
 
       if (res.ok) {
         addActionLog("Ключевое слово добавлено", "success", `"${newKeyword}" успешно добавлено`);
@@ -98,11 +98,11 @@ export default function KeywordsPage() {
           addActionLog("Ошибка n8n", "error", "Сетевая ошибка при отправке в n8n");
         }
       } else {
-        const data = await res.json();
+      const data = await res.json();
         const errorMsg = data.error || "Ошибка добавления ключа";
         addActionLog("Ошибка добавления", "error", errorMsg);
         setError(errorMsg);
-        setKeywords(originalKeywords); // Revert on error
+      setKeywords(originalKeywords); // Revert on error
       }
     } catch (err) {
       addActionLog("Ошибка сети", "error", "Не удалось добавить ключевое слово");
@@ -123,16 +123,16 @@ export default function KeywordsPage() {
     setKeywords(prev => prev.filter(k => k.id !== id));
 
     try {
-      const res = await fetch(`/api/keywords/${id}`, {
-        method: 'DELETE',
-      });
+    const res = await fetch(`/api/keywords/${id}`, {
+      method: 'DELETE',
+    });
 
       if (res.ok) {
         addActionLog("Ключевое слово удалено", "success", `"${keyword?.keyword}" удалено`);
       } else {
         addActionLog("Ошибка удаления", "error", "Не удалось удалить ключевое слово");
         setError('Не удалось удалить ключевое слово. Попробуйте еще раз.');
-        setKeywords(originalKeywords); // Revert on error
+      setKeywords(originalKeywords); // Revert on error
       }
     } catch (err) {
       addActionLog("Ошибка сети", "error", "Сетевая ошибка при удалении");
@@ -152,18 +152,18 @@ export default function KeywordsPage() {
     setEditingKeyword(null);
     
     try {
-      const res = await fetch(`/api/keywords/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: newKeyword }),
-      });
+    const res = await fetch(`/api/keywords/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword: newKeyword }),
+    });
 
       if (res.ok) {
         addActionLog("Ключевое слово обновлено", "success", `"${newKeyword}" сохранено`);
       } else {
         addActionLog("Ошибка обновления", "error", "Не удалось сохранить изменения");
         setError('Не удалось сохранить ключевое слово. Попробуйте еще раз.');
-        setKeywords(originalKeywords); // Revert on error
+      setKeywords(originalKeywords); // Revert on error
       }
     } catch (err) {
       addActionLog("Ошибка сети", "error", "Сетевая ошибка при обновлении");

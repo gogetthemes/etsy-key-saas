@@ -20,12 +20,19 @@ export default function KeywordPage() {
       <h1 className="text-2xl font-bold mb-2">{data.keyword}</h1>
       <div className="mb-2">Листингов: <b>{data.listingCount}</b></div>
       <div className="mb-2">Конкуренция: <b>{data.competition}</b></div>
+      <div className="mb-2">Последний парсинг: <b>{data.lastParsed ? new Date(data.lastParsed).toLocaleString() : '—'}</b></div>
       <div className="mb-2">Подсказки Etsy:</div>
       <ul className="mb-4 list-disc pl-6">
-        {data.suggestions.map((s: string) => <li key={s}>{s}</li>)}
+        {Array.isArray(data.etsySuggestions) && data.etsySuggestions.length > 0
+          ? data.etsySuggestions.map((s: string) => <li key={s}>{s}</li>)
+          : <li className="text-gray-400">Нет данных</li>}
       </ul>
-      <div className="mb-2">Связанные ключи (NLP): <span className="text-gray-500">[заглушка]</span></div>
-      <div className="mb-2">СЧ/НЧ: <span className="text-gray-500">[заглушка]</span></div>
+      <div className="mb-2">Связанные ключи (NLP):</div>
+      <ul className="mb-4 list-disc pl-6">
+        {Array.isArray(data.relatedKeywords) && data.relatedKeywords.length > 0
+          ? data.relatedKeywords.map((k: string) => <li key={k}>{k}</li>)
+          : <li className="text-gray-400">Нет данных</li>}
+      </ul>
     </main>
   );
 } 

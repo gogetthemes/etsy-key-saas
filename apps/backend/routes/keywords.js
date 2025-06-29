@@ -15,7 +15,20 @@ router.get('/', async (req, res) => {
         userId,
         isActive: true 
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        keyword: true,
+        userId: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        etsySuggestions: true,
+        relatedKeywords: true,
+        listingCount: true,
+        competition: true,
+        lastParsed: true
+      }
     });
     
     res.json(keywords);
@@ -31,7 +44,20 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
     const keyword = await prisma.keyword.findUnique({
-      where: { id }
+      where: { id },
+      select: {
+        id: true,
+        keyword: true,
+        userId: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        etsySuggestions: true,
+        relatedKeywords: true,
+        listingCount: true,
+        competition: true,
+        lastParsed: true
+      }
     });
     
     if (!keyword) {

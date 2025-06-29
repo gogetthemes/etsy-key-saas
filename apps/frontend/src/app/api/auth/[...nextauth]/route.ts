@@ -1,14 +1,8 @@
 import NextAuth, { AuthOptions } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-// import GoogleProvider from "next-auth/providers/google"; // Для Google OAuth, если потребуется
-
-const prisma = new PrismaClient();
+import GoogleProvider from "next-auth/providers/google";
 
 const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -21,28 +15,40 @@ const authOptions: AuthOptions = {
           throw new Error('Please enter an email and password');
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
+        try {
+          // Отправляем запрос на бэкенд для аутентификации
+          const response = await fetch('https://etsy-key-saas.onrender.com/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
 
-        if (!user || !user.passwordHash) {
-          throw new Error('No user found with this email');
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Authentication failed');
+          }
+
+          const user = await response.json();
+          return user;
+        } catch (error) {
+          console.error('Auth error:', error);
+          throw new Error('Authentication failed');
         }
-
-        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
-
-        if (!isValid) {
-          throw new Error('Incorrect password');
-        }
-
-        return user;
       }
     }),
-    // GoogleProvider({ ... })
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    })
   ],
   pages: {
     signIn: '/login',
-    error: '/login', // Redirect errors to the login page
+    error: '/login',
   },
   callbacks: {
     session({ session, token }) {
@@ -67,4 +73,4 @@ const authOptions: AuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

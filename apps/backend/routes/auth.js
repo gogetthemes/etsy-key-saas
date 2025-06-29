@@ -12,6 +12,76 @@ router.options('*', (req, res) => {
   res.sendStatus(200);
 });
 
+// Логин пользователя
+router.post('/login', async (req, res) => {
+  console.log('[AUTH] Login request received:', { 
+    body: req.body, 
+    headers: req.headers,
+    timestamp: new Date().toISOString() 
+  });
+
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    console.log('[AUTH] Login failed: missing email or password');
+    return res.status(400).json({ error: 'Email and password required' });
+  }
+
+  console.log('[AUTH] Attempting to authenticate user with email:', email);
+
+  try {
+    // Ищем пользователя
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      console.log('[AUTH] Login failed: user not found with email:', email);
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    if (!user.passwordHash) {
+      console.log('[AUTH] Login failed: user has no password hash');
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    console.log('[AUTH] Comparing passwords...');
+    const isValid = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isValid) {
+      console.log('[AUTH] Login failed: invalid password for email:', email);
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    console.log('[AUTH] Login successful for user:', { 
+      id: user.id, 
+      email: user.email, 
+      plan: user.plan 
+    });
+
+    res.json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      plan: user.plan,
+      message: 'Login successful'
+    });
+
+  } catch (e) {
+    console.error('[AUTH] Login error:', {
+      error: e.message,
+      code: e.code,
+      stack: e.stack,
+      timestamp: new Date().toISOString()
+    });
+
+    res.status(500).json({ 
+      error: 'Something went wrong during login',
+      details: process.env.NODE_ENV === 'development' ? e.message : undefined
+    });
+  }
+});
+
 // Регистрация нового пользователя
 router.post('/signup', async (req, res) => {
   console.log('[AUTH] Signup request received:', { 

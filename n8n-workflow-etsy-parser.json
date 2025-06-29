@@ -1,0 +1,197 @@
+{
+  "name": "Etsy Keyword Parser",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "keyword-parser",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "keyword-parser"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.etsy.com/search?q={{$json.keyword}}&ref=pagination&page=1",
+        "headers": {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        },
+        "timeout": 30000
+      },
+      "id": "etsy-search",
+      "name": "Etsy Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "html": "={{$json.body}}",
+        "extractionValues": [
+          {
+            "key": "suggestions",
+            "cssSelector": ".search-suggestions li, .search-suggestion, .search-suggestions-item",
+            "returnArray": true,
+            "returnValue": "text"
+          },
+          {
+            "key": "listingUrls",
+            "cssSelector": "a[data-palette-listing-image], .listing-link, a[href*='/listing/']",
+            "attribute": "href",
+            "returnArray": true
+          },
+          {
+            "key": "totalListings",
+            "cssSelector": ".search-results-count, .results-count",
+            "returnValue": "text"
+          }
+        ]
+      },
+      "id": "extract-data",
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process suggestions and clean them\nconst suggestions = $input.all()[0].json.suggestions || [];\nconst cleanedSuggestions = suggestions\n  .map(s => s.trim())\n  .filter(s => s.length > 0)\n  .slice(0, 10); // Take first 10\n\n// Process listing URLs\nconst listingUrls = $input.all()[0].json.listingUrls || [];\nconst cleanUrls = listingUrls\n  .filter(url => url && url.includes('/listing/'))\n  .slice(0, 3); // Take first 3\n\n// Extract total listings count\nconst totalText = $input.all()[0].json.totalListings || '';\nconst totalMatch = totalText.match(/(\\d{1,3}(?:,\\d{3})*)/);\nconst totalListings = totalMatch ? parseInt(totalMatch[1].replace(/,/g, '')) : 0;\n\n// Calculate competition score (0-100)\nconst competition = Math.min(100, Math.max(0, Math.floor(totalListings / 1000)));\n\nreturn {\n  suggestions: cleanedSuggestions,\n  listingUrls: cleanUrls,\n  totalListings,\n  competition,\n  originalKeyword: $('Webhook Trigger').all()[0].json.keyword,\n  keywordId: $('Webhook Trigger').all()[0].json.keywordId,\n  userId: $('Webhook Trigger').all()[0].json.userId\n};"
+      },
+      "id": "process-data",
+      "name": "Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process first 3 listings to extract keywords\nconst listingUrls = $input.all()[0].json.listingUrls;\nconst relatedKeywords = [];\n\nif (listingUrls && listingUrls.length > 0) {\n  for (const url of listingUrls) {\n    try {\n      // Make HTTP request to listing page\n      const response = await $http.get({\n        url: url,\n        headers: {\n          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'\n        },\n        timeout: 10000\n      });\n      \n      // Extract keywords from listing page\n      const html = response.body;\n      \n      // Extract tags/keywords from various selectors\n      const tagSelectors = [\n        '.listing-page-tags span',\n        '.listing-tags span',\n        '.tag',\n        '.keyword',\n        '[data-tag]',\n        '.listing-page-tag'\n      ];\n      \n      for (const selector of tagSelectors) {\n        const matches = html.match(new RegExp(`<[^>]*class=\"[^\"]*${selector.replace('.', '')}[^\"]*\"[^>]*>([^<]+)</[^>]*>`, 'gi'));\n        if (matches) {\n          matches.forEach(match => {\n            const text = match.replace(/<[^>]*>/g, '').trim();\n            if (text && text.length > 2 && text.length < 50) {\n              relatedKeywords.push(text.toLowerCase());\n            }\n          });\n        }\n      }\n      \n      // Extract from title and description\n      const titleMatch = html.match(/<title[^>]*>([^<]+)<\\/title>/i);\n      if (titleMatch) {\n        const title = titleMatch[1].toLowerCase();\n        const words = title.split(/\\s+/).filter(w => w.length > 3);\n        relatedKeywords.push(...words.slice(0, 5));\n      }\n      \n    } catch (error) {\n      console.log(`Error processing listing ${url}:`, error.message);\n    }\n  }\n}\n\n// Remove duplicates and limit to 20 keywords\nconst uniqueKeywords = [...new Set(relatedKeywords)].slice(0, 20);\n\nreturn {\n  ...$input.all()[0].json,\n  relatedKeywords: uniqueKeywords\n};"
+      },
+      "id": "extract-keywords",
+      "name": "Extract Keywords",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://your-backend.onrender.com/api/keywords/{{$json.keywordId}}/update-data",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "etsySuggestions": "={{$json.suggestions}}",
+          "relatedKeywords": "={{$json.relatedKeywords}}",
+          "listingCount": "={{$json.totalListings}}",
+          "competition": "={{$json.competition}}"
+        },
+        "timeout": 30000
+      },
+      "id": "update-backend",
+      "name": "Update Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": {
+          "success": true,
+          "message": "Keyword parsed successfully",
+          "data": {
+            "keyword": "={{$('Webhook Trigger').all()[0].json.keyword}}",
+            "suggestions": "={{$json.suggestions}}",
+            "relatedKeywords": "={{$json.relatedKeywords}}",
+            "listingCount": "={{$json.totalListings}}",
+            "competition": "={{$json.competition}}"
+          }
+        }
+      },
+      "id": "response",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Etsy Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Etsy Search": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Keywords": {
+      "main": [
+        [
+          {
+            "node": "Update Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Backend": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+} 

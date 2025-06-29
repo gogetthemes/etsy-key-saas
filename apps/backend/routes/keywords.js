@@ -106,20 +106,40 @@ router.post('/', async (req, res) => {
       });
     } else {
       console.log('[KEYWORDS] Creating new keyword...');
-      // Создаем новое ключевое слово
-      keywordRecord = await prisma.keyword.create({
-        data: {
-          keyword: keyword.toLowerCase(),
-          userId,
-          isActive: true,
-          listingCount: 0,
-          competition: 0,
-          suggestions: [],
-          relatedKeywords: [],
-          etsySuggestions: [],
-          // lastParsed не нужен при создании
+      try {
+        // Создаем новое ключевое слово
+        keywordRecord = await prisma.keyword.create({
+          data: {
+            keyword: keyword.toLowerCase(),
+            userId,
+            isActive: true,
+            listingCount: 0,
+            competition: 0,
+            suggestions: [],
+            relatedKeywords: [],
+            etsySuggestions: [],
+          }
+        });
+      } catch (err) {
+        // Если ошибка уникального индекса, просто активируем существующий ключ
+        if (err.code === 'P2002') {
+          console.log('[KEYWORDS] Duplicate keyword, activating existing...');
+          keywordRecord = await prisma.keyword.update({
+            where: {
+              keyword_userId: {
+                keyword: keyword.toLowerCase(),
+                userId
+              }
+            },
+            data: {
+              isActive: true,
+              updatedAt: new Date()
+            }
+          });
+        } else {
+          throw err;
         }
-      });
+      }
     }
     
     // Отправляем запрос в n8n для парсинга

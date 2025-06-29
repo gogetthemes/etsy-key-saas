@@ -11,9 +11,11 @@ router.get('/', async (req, res) => {
     const userId = req.query.userId || 'test-user'; // Временно для тестирования
     
     const keywords = await prisma.keyword.findMany({
-      where: { 
-        userId,
-        isActive: true 
+      where: {
+        AND: [
+          { userId },
+          { isActive: true }
+        ]
       },
       orderBy: { createdAt: 'desc' },
       select: {
@@ -109,7 +111,13 @@ router.post('/', async (req, res) => {
         data: {
           keyword: keyword.toLowerCase(),
           userId,
-          isActive: true
+          isActive: true,
+          listingCount: 0,
+          competition: 0,
+          suggestions: [],
+          relatedKeywords: [],
+          etsySuggestions: [],
+          // lastParsed не нужен при создании
         }
       });
     }

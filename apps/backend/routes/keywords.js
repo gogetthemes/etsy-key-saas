@@ -4,6 +4,20 @@ const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 const prisma = new PrismaClient();
 
+// DEBUG: Вывести реальные поля таблицы Keyword
+(async () => {
+  try {
+    const firstKeyword = await prisma.keyword.findFirst();
+    if (firstKeyword) {
+      console.log('[DEBUG] Prisma Keyword fields:', Object.keys(firstKeyword));
+    } else {
+      console.log('[DEBUG] No keywords in DB to show fields');
+    }
+  } catch (e) {
+    console.log('[DEBUG] Error reading Keyword fields:', e.message);
+  }
+})();
+
 // Получить все ключевые слова пользователя
 router.get('/', async (req, res) => {
   try {

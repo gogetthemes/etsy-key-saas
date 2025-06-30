@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const BACKEND_URL = 'https://etsy-key-saas.onrender.com';
+
 export async function POST(request: NextRequest) {
   try {
     console.log('[SIGNUP API] Request received');
@@ -7,7 +9,7 @@ export async function POST(request: NextRequest) {
     console.log('[SIGNUP API] Request body:', body);
     
     console.log('[SIGNUP API] Sending request to backend...');
-    const response = await fetch('https://etsy-key-saas.onrender.com/api/signup', {
+    const response = await fetch(`${BACKEND_URL}/api/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

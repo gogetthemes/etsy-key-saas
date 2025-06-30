@@ -22,15 +22,15 @@ export default function SignupPage() {
       console.log('[SIGNUP] Starting registration process...', { email });
       addActionLog("Отправка запроса на регистрацию", "pending", "Отправляем данные на сервер...");
       
-      // Используем локальный API route
-      const res = await fetch('/api/signup', {
-      method: "POST",
+      // Прямое обращение к backend
+      const res = await fetch('https://etsy-key-saas.onrender.com/api/signup', {
+        method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-      body: JSON.stringify({ email, password }),
-    });
+        body: JSON.stringify({ email, password }),
+      });
 
       console.log('[SIGNUP] Response received:', { 
         status: res.status, 

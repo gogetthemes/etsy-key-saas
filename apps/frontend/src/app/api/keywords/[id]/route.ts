@@ -23,14 +23,10 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop();
   try {
-    const { id } = params;
     const body = await request.json();
-    
     const response = await fetch(`${BACKEND_URL}/api/keywords/${id}`, {
       method: 'PUT',
       headers: {
@@ -50,13 +46,9 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop();
   try {
-    const { id } = params;
-    
     const response = await fetch(`${BACKEND_URL}/api/keywords/${id}`, {
       method: 'DELETE',
       headers: {

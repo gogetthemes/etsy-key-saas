@@ -87,6 +87,8 @@ router.post('/signup', async (req, res) => {
   console.log('[AUTH] Signup request received:', { 
     body: req.body, 
     headers: req.headers,
+    method: req.method,
+    url: req.url,
     timestamp: new Date().toISOString() 
   });
 

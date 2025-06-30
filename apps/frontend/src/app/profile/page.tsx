@@ -7,7 +7,9 @@ export default function ProfilePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">
-        {user?.email ? user.email : "My Profile"}
+        {status === 'authenticated' && user?.email
+          ? user.email
+          : "My Profile (Need sign in)"}
       </h1>
       <p>This is where user profile details will go.</p>
     </div>

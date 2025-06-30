@@ -2,13 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = 'https://etsy-key-saas.onrender.com';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop();
   try {
-    const { id } = params;
-    
     const response = await fetch(`${BACKEND_URL}/api/keywords/${id}`, {
       method: 'GET',
       headers: {

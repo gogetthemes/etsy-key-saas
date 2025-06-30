@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "Your keyword research assistant",
 };
 
+const BUILD_COMMIT = "7160a1002cb62aa8b30d47dfbdf6ddf93b0c5407";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,11 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans bg-gray-50 min-h-screen`}
       >
         <AuthProvider>
           <AppContent>{children}</AppContent>
         </AuthProvider>
+        <footer className="w-full text-center text-xs text-gray-400 py-2 border-t mt-8">
+          Build commit: {BUILD_COMMIT}
+        </footer>
       </body>
     </html>
   );

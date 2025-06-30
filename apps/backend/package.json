@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon ./bin/www",
     "start": "node ./bin/www",
-    "build": "npx prisma generate --schema=../../packages/prisma/schema.prisma && npx prisma db push --schema=../../packages/prisma/schema.prisma"
+    "build": "npx prisma generate --schema=../../packages/prisma/schema.prisma && npx prisma db push --schema=../../packages/prisma/schema.prisma --accept-data-loss"
   },
   "dependencies": {
     "@auth/core": "^0.39.1",

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Edit, Trash2, Info, Clock } from 'lucide-react';
+import { Edit, Trash2, Info, Clock, Loader2 } from 'lucide-react';
 import EditKeywordModal from "../components/EditKeywordModal";
 import { addActionLog } from "../components/Sidebar";
 
@@ -203,7 +203,10 @@ export default function KeywordsPage() {
         <h2 className="text-lg font-semibold mb-4">Ваши ключевые слова</h2>
         <div className="space-y-3">
           {loading && keywords.length === 0 ? (
-            <p>Загрузка ключевых слов...</p>
+            <div className="flex items-center gap-2 text-blue-600">
+              <Loader2 className="animate-spin" size={20} />
+              <span>Загрузка ключевых слов...</span>
+            </div>
           ) : keywords.length > 0 ? (
              keywords.map(k => (
               <div key={k.id} className="p-3 bg-gray-50 rounded-md flex justify-between items-center hover:bg-gray-100 transition-colors">

@@ -3,26 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon ./bin/www",
     "start": "node ./bin/www",
-    "build": "npx prisma generate --schema=../../packages/prisma/schema.prisma && npx prisma db push --schema=../../packages/prisma/schema.prisma --accept-data-loss"
+    "dev": "nodemon ./bin/www",
+    "build": "npx prisma generate --schema=../../packages/prisma/schema.prisma"
   },
   "dependencies": {
-    "@auth/core": "^0.39.1",
-    "@prisma/client": "^6.10.1",
-    "axios": "^1.10.0",
-    "bcrypt": "^6.0.0",
-    "cookie-parser": "~1.4.4",
+    "axios": "^1.6.0",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
-    "debug": "~2.6.9",
-    "dotenv": "^16.6.1",
-    "express": "~4.16.1",
-    "morgan": "~1.9.1",
-    "node-cron": "^4.1.0",
-    "prisma": "^6.10.1",
-    "stripe": "^18.2.1"
+    "dotenv": "^16.3.1",
+    "express": "~4.18.2",
+    "morgan": "~1.10.0",
+    "node-cron": "^3.0.3",
+    "@prisma/client": "^6.10.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.0.1",
+    "prisma": "^6.10.1"
   }
 }

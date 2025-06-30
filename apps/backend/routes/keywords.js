@@ -24,16 +24,10 @@ router.get('/', async (req, res) => {
     // TODO: Получить userId из сессии/токена
     const userId = req.query.userId || 'test-user'; // Временно для тестирования
     
-    console.log('[KEYWORDS] Fetching keywords for userId:', userId);
-    
     const keywords = await prisma.keyword.findMany({
-      where: {
-        userId
-      },
+      where: { userId },
       orderBy: { createdAt: 'desc' }
     });
-    
-    console.log('[KEYWORDS] Found keywords:', keywords.length);
     
     res.json(keywords);
   } catch (error) {

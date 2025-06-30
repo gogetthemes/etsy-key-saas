@@ -156,4 +156,40 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// Временный роут для создания тестового пользователя
+router.post('/create-test-user', async (req, res) => {
+  try {
+    console.log('[AUTH] Creating test user...');
+    
+    const passwordHash = await bcrypt.hash('password123', 10);
+    
+    const user = await prisma.user.create({
+      data: {
+        id: 'cmcgk0ek40001cu3mpblw8a60',
+        email: 'test@example.com',
+        passwordHash: passwordHash,
+        plan: 'FREE'
+      }
+    });
+    
+    console.log('[AUTH] Test user created:', user.id);
+    
+    res.json({
+      id: user.id,
+      email: user.email,
+      plan: user.plan,
+      message: 'Test user created successfully'
+    });
+    
+  } catch (e) {
+    if (e.code === 'P2002') {
+      console.log('[AUTH] Test user already exists');
+      res.json({ message: 'Test user already exists' });
+    } else {
+      console.error('[AUTH] Create test user error:', e);
+      res.status(500).json({ error: 'Failed to create test user' });
+    }
+  }
+});
+
 module.exports = router;

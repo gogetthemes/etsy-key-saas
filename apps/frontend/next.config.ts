@@ -6,6 +6,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/api/auth/:path*',
+        destination: 'https://etsy-key-saas.onrender.com/api/auth/:path*'
+      },
+      {
         source: '/api/:path*',
         destination: 'https://etsy-key-saas.onrender.com/api/:path*'
       }

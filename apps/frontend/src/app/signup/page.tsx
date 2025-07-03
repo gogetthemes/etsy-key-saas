@@ -3,6 +3,8 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { addActionLog } from "../components/Sidebar";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +25,7 @@ export default function SignupPage() {
       addActionLog("Отправка запроса на регистрацию", "pending", "Отправляем данные на сервер...");
       
       // Прямое обращение к backend
-      const res = await fetch('https://etsy-key-saas.onrender.com/api/signup', {
+      const res = await fetch(`${API_URL}/api/signup`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

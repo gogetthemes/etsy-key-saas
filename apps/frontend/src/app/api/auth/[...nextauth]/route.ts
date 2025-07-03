@@ -2,6 +2,8 @@ import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -16,8 +18,8 @@ const authOptions: AuthOptions = {
         }
 
         try {
-          // Отправляем запрос на бэкенд для аутентификации
-          const response = await fetch('https://etsy-key-saas.onrender.com/api/auth/login', {
+          // Отправляем запрос на backend для аутентификации
+          const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

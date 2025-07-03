@@ -40,7 +40,7 @@ app.use(cors({
     'https://etsy-key-saas-git-develop-gogetthemes.vercel.app',
     'http://localhost:3000',
     'https://localhost:3000',
-    'https://etsy-key-saas.onrender.com',
+    'http://34.133.200.169:4000',
     '*' // Временно разрешаем все домены для отладки
   ],
   credentials: true,

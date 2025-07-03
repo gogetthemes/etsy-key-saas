@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 export default function TestSignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +18,7 @@ export default function TestSignupPage() {
       console.log('[TEST SIGNUP] Starting registration...');
       
       // Прямое обращение к backend
-      const res = await fetch('https://etsy-key-saas.onrender.com/api/signup', {
+      const res = await fetch(`${API_URL}/api/signup`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

@@ -105,12 +105,12 @@ router.post('/', async (req, res) => {
       try {
         // Создаем новое ключевое слово
         keywordRecord = await prisma.keyword.create({
-          data: {
+    data: { 
             keyword: keyword.toLowerCase(),
             userId,
             isActive: true,
-            listingCount: 0,
-            competition: 0,
+      listingCount: 0, 
+      competition: 0, 
             suggestions: [],
             relatedKeywords: [],
             etsySuggestions: [],
@@ -131,8 +131,8 @@ router.post('/', async (req, res) => {
               isActive: true,
               updatedAt: new Date()
             }
-          });
-        } else {
+    });
+  } else {
           throw err;
         }
       }

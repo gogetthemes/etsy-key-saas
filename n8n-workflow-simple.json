@@ -30,7 +30,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "https://your-backend.onrender.com/api/keywords/{{$('Webhook Trigger').all()[0].json.keywordId}}/update-data",
+        "url": "http://34.133.200.169:4000/api/keywords/{{$('Webhook Trigger').all()[0].json.keywordId}}/update-data",
         "headers": {
           "Content-Type": "application/json"
         },

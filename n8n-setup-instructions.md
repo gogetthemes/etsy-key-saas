@@ -70,7 +70,7 @@ return {
 2. Найдите "HTTP Request"
 3. Настройте:
    - **Method**: PUT
-   - **URL**: `https://your-backend.onrender.com/api/keywords/{{$json.keywordId}}/update-data`
+   - **URL**: `http://34.133.200.169:4000/api/keywords/{{$json.keywordId}}/update-data`
    - **Headers**:
      ```
      Content-Type: application/json
@@ -118,7 +118,7 @@ N8N_WEBHOOK_URL=https://your-n8n-domain.com/webhook/keyword-parser
 
 ## Шаг 10: Тестирование
 
-1. Откройте: `https://your-backend.onrender.com/test-keywords.html`
+1. Откройте: `http://34.133.200.169:4000/test-keywords.html`
 2. Добавьте ключевое слово
 3. Проверьте логи в n8n и backend
 

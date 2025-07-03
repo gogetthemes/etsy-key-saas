@@ -81,7 +81,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "https://your-backend.onrender.com/api/keywords/{{$json.keywordId}}/update-data",
+        "url": "http://34.133.200.169:4000/api/keywords/{{$json.keywordId}}/update-data",
         "headers": {
           "Content-Type": "application/json"
         },
